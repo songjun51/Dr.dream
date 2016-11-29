@@ -7,4 +7,26 @@
     android:background="#18AD8F"
     tools:context="kr.edcan.drdream.SplashActivity">
 
+    <LinearLayout
+        android:layout_margin="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dr.Dream"
+            android:textColor="#FFF"
+            android:textSize="40dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FOR BETTER DRAGONFLIES"
+            android:textStyle="bold"
+            android:textColor="#33FFFFFF"
+            android:textSize="15dp" />
+    </LinearLayout>
 </RelativeLayout>

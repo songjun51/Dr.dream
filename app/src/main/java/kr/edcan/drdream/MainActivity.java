@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,6 +15,9 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 
@@ -21,10 +25,14 @@ public class MainActivity extends AppCompatActivity {
     DataManager manager;
     boolean isStarted = false;
     BluetoothSPP bt;
-    TextView temp1,temp2,huni1,huni2,time;
-    ImageView imtemp,imhuni,imtime;
-    String[] str;
-    int temp,huni,slptime;
+    TextView temp1, temp2, huni1, huni2, time;
+    ImageView imtemp, imhuni, imtime;
+    String[] str = {"", "", "", ""};
+    int temp;
+    int huni;
+    String slptime;
+    boolean shit = true;
+    String msg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,41 +41,11 @@ public class MainActivity extends AppCompatActivity {
         setDefault();
         setClick();
         init();
-    }
-
-    private void setDefault() {
-        manager = new DataManager(getApplicationContext());
-
-    }
-
-    private void init() {
-        temp1=(TextView) findViewById(R.id.nowtemp);
-        temp2=(TextView) findViewById(R.id.retemp);
-
-        huni1=(TextView) findViewById(R.id.nowhumi);
-        huni2=(TextView) findViewById(R.id.rehumi);
-
-        time=(TextView) findViewById(R.id.sleepTime);
-
-        imtemp=(ImageView) findViewById(R.id.IV_temp);
-        imhuni=(ImageView) findViewById(R.id.IV_humi);
-        imtime=(ImageView) findViewById(R.id.IV_time);
 
 
+        bt = new BluetoothSPP(this);
 
-        (findViewById(R.id.noHumidVisible)).setVisibility((manager.getHumid() == -1) ? View.VISIBLE : View.GONE);
-        (findViewById(R.id.humidVisible)).setVisibility((manager.getHumid() == -1) ? View.GONE : View.VISIBLE);
-        (findViewById(R.id.noTempVisible)).setVisibility((manager.getTemp() == -1) ? View.VISIBLE : View.GONE);
-        (findViewById(R.id.tempVisible)).setVisibility((manager.getTemp() == -1) ? View.GONE : View.VISIBLE);
-        if (manager.getTemp() != -1) {
-            ((TextView) findViewById(R.id.retemp)).setText(manager.getTemp() + "");
-        }
-        if (manager.getHumid() != -1) {
-            ((TextView) findViewById(R.id.rehumi)).setText(manager.getHumid() + "");
-        }
-        bt=new BluetoothSPP(this);
-
-        if(!bt.isBluetoothAvailable())
+        if (!bt.isBluetoothAvailable())
 
         {
             Toast.makeText(getApplicationContext()
@@ -86,11 +64,6 @@ public class MainActivity extends AppCompatActivity {
                 imtemp.setImageResource(R.drawable.ic_snow);
                 imhuni.setImageResource(R.drawable.ic_opacity);
                 imtime.setImageResource(R.drawable.ic_opacity);
-
-
-
-
-
 
 
             }
@@ -112,16 +85,71 @@ public class MainActivity extends AppCompatActivity {
             public void onAutoConnectionStarted() {
             }
         });
+
+
         bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
             public void onDataReceived(byte[] data, String message) {
-                str = message.split(";");
+                str = message.split(".");
 
-                temp1.setText(str[0]);
-                huni1.setText(str[1]);
-                time.setText(str[2]);
+                // 0 flex, 1 temp, 2 humi, 3 light
+                if (message.length() >= 8) {
+                    huni1.setText(message.substring(0, 2));
+                    temp1.setText(message.substring(6, 8));
+                }
+                msg = message;
+                Log.e("asdf", message);
+                String nowtime;
+                nowtime = new SimpleDateFormat("HH:mm").format(new Date(System.currentTimeMillis()));
+                Log.e("asdf", nowtime);
+                if (nowtime.equals(slptime)) {
+                    if (shit = true) {
+                        Log.e("asdf", ":알람");
+                        bt.send("a", true);//티비끄기
+
+//                        while (!message.equals("getA")) {
+                        if(message.equals("getA")){
+                            Log.e("asdf","GetA기다리기");
+                            shit = false;
+                        }
+                    }
+                } else
+                    Log.e("asdf", "알람ㅅ기간아님");
+                shit = true;
 
             }
         });
+
+    }
+
+    private void setDefault() {
+        manager = new DataManager(getApplicationContext());
+
+    }
+
+    private void init() {
+        temp1 = (TextView) findViewById(R.id.nowtemp);
+        temp2 = (TextView) findViewById(R.id.retemp);
+
+        huni1 = (TextView) findViewById(R.id.nowhumi);
+        huni2 = (TextView) findViewById(R.id.rehumi);
+
+        time = (TextView) findViewById(R.id.sleepTime);
+
+        imtemp = (ImageView) findViewById(R.id.IV_temp);
+        imhuni = (ImageView) findViewById(R.id.IV_humi);
+        imtime = (ImageView) findViewById(R.id.IV_time);
+
+
+//        (findViewById(R.id.noHumidVisible)).setVisibility((manager.getHumid() == -1) ? View.VISIBLE : View.GONE);
+//        (findViewById(R.id.humidVisible)).setVisibility((manager.getHumid() == -1) ? View.GONE : View.VISIBLE);
+//        (findViewById(R.id.noTempVisible)).setVisibility((manager.getTemp() == -1) ? View.VISIBLE : View.GONE);
+//        (findViewById(R.id.tempVisible)).setVisibility((manager.getTemp() == -1) ? View.GONE : View.VISIBLE);
+        if (manager.getTemp() != -1) {
+            ((TextView) findViewById(R.id.retemp)).setText(manager.getTemp() + "");
+        }
+        if (manager.getHumid() != -1) {
+            ((TextView) findViewById(R.id.rehumi)).setText(manager.getHumid() + "");
+        }
     }
 
     private void setClick() {
@@ -139,8 +167,8 @@ public class MainActivity extends AppCompatActivity {
                                 manager.setHumid(Integer.parseInt(((EditText) origin.findViewById(R.id.input)).getText().toString()));
                                 init();
                                 String fuck;
-                                fuck = ((EditText)origin.findViewById(R.id.input)).getText().toString();
-                                huni=Integer.parseInt(fuck);
+                                fuck = ((EditText) origin.findViewById(R.id.input)).getText().toString();
+                                huni = Integer.parseInt(fuck);
                             }
                         })
                         .show();
@@ -160,8 +188,8 @@ public class MainActivity extends AppCompatActivity {
                                 manager.setTemp(Integer.parseInt(((EditText) origin.findViewById(R.id.input)).getText().toString()));
                                 init();
                                 String fuck;
-                                fuck = ((EditText)origin.findViewById(R.id.input)).getText().toString();
-                                temp=Integer.parseInt(fuck);
+                                fuck = ((EditText) origin.findViewById(R.id.input)).getText().toString();
+                                temp = Integer.parseInt(fuck);
 
                             }
                         })
@@ -179,11 +207,11 @@ public class MainActivity extends AppCompatActivity {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                ((TextView)(findViewById(R.id.sleepTime))).setText(((EditText) origin.findViewById(R.id.input)).getText().toString());
+                                ((TextView) (findViewById(R.id.sleepTime))).setText(((EditText) origin.findViewById(R.id.input)).getText().toString());
                                 init();
-                                String fuck;
-                                fuck = ((EditText)origin.findViewById(R.id.input)).getText().toString();
-                                slptime=Integer.parseInt(fuck);
+                                slptime = ((EditText) origin.findViewById(R.id.input)).getText().toString();
+//                                slptime=Integer.parseInt(fuck);
+
                             }
                         })
                         .show();
@@ -193,10 +221,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "수면이 시작되었습니다!", Toast.LENGTH_SHORT).show();
+                Log.e("asdf", "slptime : " + slptime);
             }
         });
         //티비끄기
-        bt.send("t",true);
+//        bt.send("a",true);
 
     }
 
@@ -236,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setup() {
-        bt.autoConnect("HC-06");
+        bt.autoConnect("DR.dream");
     }
 
 }

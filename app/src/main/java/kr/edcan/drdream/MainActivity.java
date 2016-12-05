@@ -138,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 manager.setHumid(Integer.parseInt(((EditText) origin.findViewById(R.id.input)).getText().toString()));
                                 init();
-                                origin.findViewById(R.id.input);
+                                String fuck;
+                                fuck = ((EditText)origin.findViewById(R.id.input)).getText().toString();
+                                huni=Integer.parseInt(fuck);
                             }
                         })
                         .show();
@@ -158,7 +160,8 @@ public class MainActivity extends AppCompatActivity {
                                 manager.setTemp(Integer.parseInt(((EditText) origin.findViewById(R.id.input)).getText().toString()));
                                 init();
                                 String fuck;
-                                fuck = (EditText)origin.findViewById(R.id.input)).getText().toString();
+                                fuck = ((EditText)origin.findViewById(R.id.input)).getText().toString();
+                                temp=Integer.parseInt(fuck);
 
                             }
                         })
@@ -178,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 ((TextView)(findViewById(R.id.sleepTime))).setText(((EditText) origin.findViewById(R.id.input)).getText().toString());
                                 init();
+                                String fuck;
+                                fuck = ((EditText)origin.findViewById(R.id.input)).getText().toString();
+                                slptime=Integer.parseInt(fuck);
                             }
                         })
                         .show();
